@@ -8,18 +8,20 @@ import akka.actor.typed.javadsl.Receive;
 
 class MasterControlProgramWatchingActor extends
   AbstractBehavior<MasterControlProgramWatchingActor.Command> {
+
   protected interface Command {}
 
-  public static final class SpawnJob implements MasterControlProgramWatchingActor.Command {
+  public static final class SpawnJob implements
+    MasterControlProgramWatchingActor.Command {
     public final String name;
-
     public SpawnJob(String name) {
       this.name = name;
     }
   }
 
   public static Behavior<MasterControlProgramWatchingActor.Command> create() {
-    return Behaviors.setup(context -> new MasterControlProgramWatchingActor(context));
+    return Behaviors.setup(context ->
+      new MasterControlProgramWatchingActor(context));
   }
 
   public MasterControlProgramWatchingActor
@@ -37,7 +39,15 @@ class MasterControlProgramWatchingActor extends
 
   private Behavior<Command> onSpawnJob(SpawnJob message) {
     getContext().getSystem().log().info("Spawning job {}", message.name);
-    ActorRef<JobWatchedActor.Command> job = getContext().spawn(JobWatchedActor.create(message.name), message.name);
+    /**
+     * spawning an actor
+     **/
+    ActorRef<JobWatchedActor.Command> job = getContext()
+      .spawn(JobWatchedActor.create(message.name), message.name);
+
+    /**
+     * watching an actor
+     **/
     getContext().watch(job);
     job.tell(new JobWatchedActor.Terminate());
     return this;

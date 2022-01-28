@@ -9,12 +9,13 @@ import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 
 
-class MasterControlProgram extends AbstractBehavior<MasterControlProgram.Command> {
+class MasterControlProgram extends
+  AbstractBehavior<MasterControlProgram.Command> {
+
   protected interface Command {}
 
   public static final class SpawnJob implements Command {
     public final String name;
-
     public SpawnJob(String name) {
       this.name = name;
     }
@@ -49,6 +50,9 @@ class MasterControlProgram extends AbstractBehavior<MasterControlProgram.Command
 
   private Behavior<Command> onGracefulShutdown() {
     getContext().getSystem().log().info("Initiating graceful shutdown...");
+    /**
+     * stopping an actor
+     **/
     return Behaviors.stopped();
   }
 
@@ -89,8 +93,13 @@ class StoppingActor {
     ActorSystem<MasterControlProgram.Command> actorSystem
       = ActorSystem.create(MasterControlProgram.create(), "MasterProgram");
 
-    actorSystem.tell(new MasterControlProgram.SpawnJob("Job-1"));
-    actorSystem.tell(new MasterControlProgram.SpawnJob("Job-2"));
-    actorSystem.tell(MasterControlProgram.GracefulShutdown.INSTANCE);
+    actorSystem
+      .tell(new MasterControlProgram.SpawnJob("Job-1"));
+
+    actorSystem
+      .tell(new MasterControlProgram.SpawnJob("Job-2"));
+
+    actorSystem
+      .tell(MasterControlProgram.GracefulShutdown.INSTANCE);
   }
 }
