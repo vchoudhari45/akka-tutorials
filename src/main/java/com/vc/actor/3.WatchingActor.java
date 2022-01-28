@@ -54,7 +54,8 @@ class MasterControlProgramWatchingActor extends
   }
 
   private Behavior<Command> onTerminated(Terminated terminated) {
-    getContext().getSystem().log().info("Job stopped: {}", terminated.getRef().path().name());
+    getContext().getSystem()
+      .log().info("Job stopped: {}", terminated.getRef().path().name());
     return this;
   }
 }

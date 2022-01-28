@@ -9,6 +9,7 @@ import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 
 class GreeterActor extends AbstractBehavior<GreeterActor.Command> {
+
   protected interface Command{}
 
   public static final class ThankYou implements GreeterActor.Command {
@@ -31,7 +32,8 @@ class GreeterActor extends AbstractBehavior<GreeterActor.Command> {
     ActorRef<GreetedActor.Command> actorRef
       = getContext().spawn(GreetedActor.create(), "GreetedActor");
 
-    actorRef.tell(new GreetedActor.Greetings("Greetings", getContext().getSelf()));
+    actorRef
+      .tell(new GreetedActor.Greetings("Greetings", getContext().getSelf()));
   }
 
   @Override
@@ -42,7 +44,9 @@ class GreeterActor extends AbstractBehavior<GreeterActor.Command> {
   }
 
   private Behavior<GreeterActor.Command> onThankYou(ThankYou thankYou) {
-    getContext().getLog().info("Thank you received from Greeted actor {}", thankYou.from);
+    getContext().getLog()
+      .info("Thank you received from Greeted actor {}", thankYou.from);
+
     return this;
   }
 }
@@ -75,7 +79,9 @@ class GreetedActor extends AbstractBehavior<GreetedActor.Command> {
   }
 
   private Behavior<GreetedActor.Command> onGreetings(Greetings greetings) {
-    getContext().getLog().info("{} received from Greeting actor {}", greetings.msg, greetings.from);
+    getContext().getLog()
+      .info("{} received from Greeting actor {}", greetings.msg, greetings.from);
+
     greetings.from.tell(new GreeterActor.ThankYou(getContext().getSelf()));
     return this;
   }

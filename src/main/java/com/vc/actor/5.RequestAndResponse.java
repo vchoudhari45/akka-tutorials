@@ -53,7 +53,9 @@ class CookieResponder
   }
 }
 
-class CookieRequester extends AbstractBehavior<CookieRequester.Command> {
+class CookieRequester
+  extends AbstractBehavior<CookieRequester.Command> {
+  
   protected interface Command{}
 
   public static final class CookieResponse
