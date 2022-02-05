@@ -3,6 +3,7 @@ package com.vc.actor;
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.ActorSystem;
 import akka.actor.typed.Behavior;
+import akka.actor.typed.SupervisorStrategy;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
@@ -20,7 +21,9 @@ class GreeterActor extends AbstractBehavior<GreeterActor.Command> {
   }
 
   static Behavior<GreeterActor.Command> create() {
-    return Behaviors.setup(context -> new GreeterActor(context));
+    Behavior<GreeterActor.Command> command = Behaviors.setup(context -> new GreeterActor(context));
+    Behaviors.supervise(command).onFailure(IllegalStateException.class, SupervisorStrategy.restart());
+    return command;
   }
 
   private GreeterActor(ActorContext<GreeterActor.Command> context) {
