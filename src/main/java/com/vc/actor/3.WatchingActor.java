@@ -11,8 +11,7 @@ class MasterControlProgramWatchingActor extends
 
   protected interface Command {}
 
-  public static final class SpawnJob implements
-    MasterControlProgramWatchingActor.Command {
+  public static final class SpawnJob implements MasterControlProgramWatchingActor.Command {
     public final String name;
     public SpawnJob(String name) {
       this.name = name;
@@ -42,8 +41,8 @@ class MasterControlProgramWatchingActor extends
     /**
      * spawning an actor
      **/
-    ActorRef<JobWatchedActor.Command> job = getContext()
-      .spawn(JobWatchedActor.create(message.name), message.name);
+    ActorRef<JobWatchedActor.Command> job =
+      getContext().spawn(JobWatchedActor.create(message.name), message.name);
 
     /**
      * watching an actor
@@ -81,7 +80,7 @@ class JobWatchedActor extends AbstractBehavior<JobWatchedActor.Command> {
   @Override
   public Receive<JobWatchedActor.Command> createReceive() {
     return newReceiveBuilder()
-      .onMessage(Terminate.class,  terminate -> onTerminate())
+      .onMessage(Terminate.class, terminate -> onTerminate())
       .onSignal(PostStop.class, postStop -> onPostStop()).build();
   }
 
@@ -98,8 +97,8 @@ class JobWatchedActor extends AbstractBehavior<JobWatchedActor.Command> {
 
 class WatchingActor {
   public static void main(String[] args) {
-    ActorSystem<MasterControlProgramWatchingActor.Command> actorSystem
-      = ActorSystem.create(MasterControlProgramWatchingActor.create(), "MasterProgram");
+    ActorSystem<MasterControlProgramWatchingActor.Command> actorSystem =
+      ActorSystem.create(MasterControlProgramWatchingActor.create(), "clusterSystem");
 
     actorSystem.tell(new MasterControlProgramWatchingActor.SpawnJob("Job-1"));
   }

@@ -148,21 +148,36 @@ class FutureResultToSelf extends AbstractBehavior<FutureResultToSelf.Command> {
   public Receive<Command> createReceive() {
     return newReceiveBuilder().build();
   }
+}
+
+
+class FutureResultToSelfDemo {
+
+  public static Behavior<Void> create() {
+    return Behaviors.setup(context -> {
+      ActorRef<CustomerRepository.Command> customerDAOActorRef =
+        context.spawn(CustomerRepository.create(new CustomerDataAccess() {
+          @Override
+          public CompletionStage<Done> update(Customer customer) {
+            return CompletableFuture.completedFuture(Done.getInstance());
+          }
+        }), "customerDAOActorRef");
+
+      ActorRef<FutureResultToSelf.Command> actorRef = context
+        .spawn(FutureResultToSelf.create(), "actorRef");
+
+      customerDAOActorRef.tell(new CustomerRepository.Update(
+        new Customer(
+          "cust001",
+          1L,
+          "customerName",
+          "customerAddress"), actorRef));
+
+        return Behaviors.receive(Void.class).build();
+    });
+  }
 
   public static void main(String[] args) {
-    ActorSystem<CustomerRepository.Command> actorSystem =
-      ActorSystem.create(CustomerRepository.create(new CustomerDataAccess() {
-        @Override
-        public CompletionStage<Done> update(Customer customer) {
-          return CompletableFuture.completedFuture(Done.getInstance());
-        }
-      }), "actorSystem");
-
-    ActorRef<FutureResultToSelf.Command> actorRef = ActorSystem.create(
-      FutureResultToSelf.create(), "actorRef");
-
-    actorSystem.tell(new CustomerRepository.Update(
-      new Customer("cust001", 1l, "customerName",
-        "customerAddress"), actorRef));
+    ActorSystem.create(FutureResultToSelfDemo.create(), "clusterSystem");
   }
 }

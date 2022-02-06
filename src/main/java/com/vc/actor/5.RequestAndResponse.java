@@ -18,8 +18,7 @@ class CookieResponder
     final long requestId;
     final ActorRef<CookieRequester.Command> replyTo;
 
-    public CookieRequest(long requestId,
-                         ActorRef<CookieRequester.Command> replyTo) {
+    public CookieRequest(long requestId, ActorRef<CookieRequester.Command> replyTo) {
       this.requestId = requestId;
       this.replyTo = replyTo;
     }
@@ -73,8 +72,8 @@ class CookieRequester
   public CookieRequester(ActorContext<Command> context) {
     super(context);
 
-    ActorRef<CookieResponder.Command> cookieResponder
-      = getContext().spawn(CookieResponder.create(), "CookieResponder");
+    ActorRef<CookieResponder.Command> cookieResponder =
+      getContext().spawn(CookieResponder.create(), "CookieResponder");
 
     cookieResponder
       .tell(new CookieResponder.CookieRequest(1l, getContext().getSelf()));
@@ -96,6 +95,6 @@ class CookieRequester
   }
 
   public static void main(String[] args) {
-    ActorSystem.create(CookieRequester.create(), "actorSystem");
+    ActorSystem.create(CookieRequester.create(), "clusterSystem");
   }
 }

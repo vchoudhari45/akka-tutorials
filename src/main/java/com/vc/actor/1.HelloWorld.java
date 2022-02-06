@@ -32,8 +32,8 @@ class GreeterActor extends AbstractBehavior<GreeterActor.Command> {
     /**
      * spawning a child actor, and sending {@link GreetedActor.Greetings} msg to it
      **/
-    ActorRef<GreetedActor.Command> actorRef
-      = getContext().spawn(GreetedActor.create(), "GreetedActor");
+    ActorRef<GreetedActor.Command> actorRef =
+      getContext().spawn(GreetedActor.create(), "GreetedActor");
 
     actorRef
       .tell(new GreetedActor.Greetings("Greetings", getContext().getSelf()));
@@ -92,6 +92,6 @@ class GreetedActor extends AbstractBehavior<GreetedActor.Command> {
 
 class HelloWorld {
   public static void main(String[] args) {
-    ActorSystem.create(GreeterActor.create(), "actorSystem");
+    ActorSystem.create(GreeterActor.create(), "clusterSystem");
   }
 }

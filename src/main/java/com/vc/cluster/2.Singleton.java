@@ -1,12 +1,15 @@
 package com.vc.cluster;
 
 
+import akka.actor.typed.ActorSystem;
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
+import akka.cluster.typed.ClusterSingleton;
+import akka.cluster.typed.SingletonActor;
 
 class Counter extends AbstractBehavior<Counter.Command> {
   protected interface Command {}
@@ -62,14 +65,22 @@ class Counter extends AbstractBehavior<Counter.Command> {
   }
 }
 
-/**
- * import akka.cluster.typed.ClusterSingleton;
- * import akka.cluster.typed.ClusterSingletonSettings;
- * import akka.cluster.typed.SingletonActor;
- *
- * ClusterSingleton singleton = ClusterSingleton.get(system);
- * ActorRef<Counter.Command> proxy =
- *     singleton.init(SingletonActor.of(Counter.create(), "GlobalCounter"));
- *
- * proxy.tell(Counter.Increment.INSTANCE);
- **/
+class SingletonDemo {
+  public static Behavior<Integer> create() {
+    return Behaviors.setup(context -> {
+      ClusterSingleton singleton = ClusterSingleton.get(context.getSystem());
+
+      ActorRef<Counter.Command> proxy =
+        singleton.init(SingletonActor.of(Counter.create(), "GlobalCounter"));
+
+      proxy.tell(Counter.Increment.INSTANCE);
+      proxy.tell(new Counter.GetValue(context.getSelf()));
+
+      return Behaviors.receive(Integer.class).build();
+    });
+  }
+
+  public static void main(String[] args) {
+    ActorSystem.create(SingletonDemo.create(), "clusterSystem");
+  }
+}

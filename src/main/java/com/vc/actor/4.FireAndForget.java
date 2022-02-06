@@ -26,8 +26,8 @@ class Printer {
 
 class FireAndForget {
   public static void main(String[] args) {
-    final ActorSystem<Printer.PrintMe> system
-      = ActorSystem.create(Printer.create(), "PrinterSystem");
+    final ActorSystem<Printer.PrintMe> system =
+      ActorSystem.create(Printer.create(), "clusterSystem");
 
     /**
      *  fire & forget

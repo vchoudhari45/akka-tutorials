@@ -45,13 +45,15 @@ class Hal extends AbstractBehavior<Hal.Command> {
       .build();
   }
 
-  private Behavior<Hal.Command>
-  onOpenThePodBayDoorsPlease(OpenThePodBayDoorsPlease openThePodBayDoorsPlease) throws InterruptedException {
+  private Behavior<Hal.Command> onOpenThePodBayDoorsPlease(
+    OpenThePodBayDoorsPlease openThePodBayDoorsPlease) throws InterruptedException {
     /**
      *  Uncomment below to make ask from Dave actor fail
-     *  Thread.sleep(2000);
+     *  Thread.sleep(6000);
      **/
-    openThePodBayDoorsPlease.respondTo.tell(new HalResponse("I'm sorry, Dave. I'm afraid I can't do that."));
+    openThePodBayDoorsPlease.respondTo
+      .tell(new HalResponse("I'm sorry, Dave. I'm afraid I can't do that."));
+
     return this;
   }
 }
@@ -77,7 +79,7 @@ class Dave extends AbstractBehavior<Dave.Command> {
     /**
      *  RequestResponse with Ask
      **/
-    final Duration timeout = Duration.ofSeconds(1);
+    final Duration timeout = Duration.ofSeconds(5);
     final int requestId = 1;
     context.ask(
       Hal.HalResponse.class,
@@ -106,10 +108,16 @@ class Dave extends AbstractBehavior<Dave.Command> {
 }
 
 class RequestAndResponseAsk {
-  public static void main(String[] args) {
-    ActorRef<Hal.Command> halActorRef = ActorSystem.create(Hal.create(), "halActorRef");
+  public static Behavior<Void> create() {
+    return Behaviors.setup(
+      context -> {
+        ActorRef<Hal.Command> halActorRef = context.spawn(Hal.create(), "clusterSystem");
+        context.spawn(Dave.create(halActorRef), "Dave");
+        return Behaviors.receive(Void.class).build();
+      });
+  }
 
-    ActorSystem<Dave.Command> actorSystem
-      = ActorSystem.create(Dave.create(halActorRef), "actorSystem");
+  public static void main(String[] args) {
+    ActorSystem.create(RequestAndResponseAsk.create(), "clusterSystem");
   }
 }

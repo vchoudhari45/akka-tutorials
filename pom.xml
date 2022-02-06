@@ -43,6 +43,11 @@
 
     <dependency>
       <groupId>com.typesafe.akka</groupId>
+      <artifactId>akka-cluster-sharding-typed_${scala.binary.version}</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-stream_${scala.binary.version}</artifactId>
     </dependency>
 

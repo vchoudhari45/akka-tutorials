@@ -54,6 +54,6 @@ class PrintActorCluster extends AbstractBehavior<PrintActorCluster.Command> {
 class ClusterDemo {
   public static void main(String[] args) {
     ActorSystem<PrintActorCluster.Command> actorSystem =
-      ActorSystem.create(PrintActorCluster.create(), "ClusterSystem");
+      ActorSystem.create(PrintActorCluster.create(), "clusterSystem");
   }
 }

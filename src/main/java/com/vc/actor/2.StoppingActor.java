@@ -26,7 +26,7 @@ class MasterControlProgram extends
   }
 
   public static Behavior<Command> create() {
-    return Behaviors.setup(MasterControlProgram::new);
+    return Behaviors.setup(context -> new MasterControlProgram(context));
   }
 
   public MasterControlProgram(ActorContext<Command> context) {
@@ -36,7 +36,7 @@ class MasterControlProgram extends
   @Override
   public Receive<Command> createReceive() {
     return newReceiveBuilder()
-      .onMessage(SpawnJob.class, this::onSpawnJob)
+      .onMessage(SpawnJob.class, message -> onSpawnJob(message))
       .onMessage(GracefulShutdown.class, message -> onGracefulShutdown())
       .onSignal(PostStop.class, signal -> onPostStop())
       .build();
@@ -90,8 +90,8 @@ class Job extends AbstractBehavior<Job.Command> {
 
 class StoppingActor {
   public static void main(String[] args) {
-    ActorSystem<MasterControlProgram.Command> actorSystem
-      = ActorSystem.create(MasterControlProgram.create(), "MasterProgram");
+    ActorSystem<MasterControlProgram.Command> actorSystem =
+      ActorSystem.create(MasterControlProgram.create(), "clusterSystem");
 
     actorSystem
       .tell(new MasterControlProgram.SpawnJob("Job-1"));

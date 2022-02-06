@@ -62,7 +62,7 @@ class CookieFabric extends AbstractBehavior<CookieFabric.Command> {
 class RequestAndResponseAskFromOutsideActor {
   public static void main(String[] args) {
     ActorSystem<CookieFabric.Command> cookieFabric =
-      ActorSystem.create(CookieFabric.create(), "actorSystem");
+      ActorSystem.create(CookieFabric.create(), "clusterSystem");
 
     /**
      *  RequestResponse with Ask from outside of the actor

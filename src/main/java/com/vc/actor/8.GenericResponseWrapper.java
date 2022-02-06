@@ -108,10 +108,16 @@ class GenericResponseDave extends AbstractBehavior<GenericResponseDave.Command> 
 }
 
 class GenericResponseWrapper {
-  public static void main(String[] args) {
-    ActorRef<GenericResponseHal.Command> halActorRef =
-      ActorSystem.create(GenericResponseHal.create(), "halActorRef");
+  public static Behavior<Void> create() {
+    return Behaviors.setup(
+      context -> {
+        ActorRef<GenericResponseHal.Command> halActorRef = context.spawn(GenericResponseHal.create(), "halActorRef");
+        context.spawn(GenericResponseDave.create(halActorRef), "daveActorRef");
+        return Behaviors.receive(Void.class).build();
+      });
+  }
 
-    ActorSystem.create(GenericResponseDave.create(halActorRef), "actorSystem");
+  public static void main(String[] args) {
+    ActorSystem.create(GenericResponseWrapper.create(), "clusterSystem");
   }
 }
